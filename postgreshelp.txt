@@ -1,0 +1,509 @@
+Ref link : https://www.postgresql.r2schools.com/how-to-find-long-running-queries-in-postgresql/ 
+
+https://www.w3schools.com/postgresql/index.php 
+
+https://www.tutorialspoint.com/postgresql/index.htm 
+
+ 
+
+https://www.postgresqltutorial.com/ 
+
+ 
+
+psql -h <REMOTE HOST> -p <REMOTE PORT> -U <DB_USER> <DB_NAME> 
+
+ 
+
+PostgreSQL - How to grant access to users? 
+
+April 11, 2018 
+
+How to grant access to users in PostgreSQL? 
+
+Here are some common statement to grant access to a PostgreSQL user: 
+
+1. Grant CONNECT to the database: 
+
+GRANT CONNECT ON DATABASE database_name TO username; 
+
+2. Grant USAGE on schema: 
+
+GRANT USAGE ON SCHEMA schema_name TO username; 
+
+3. Grant on all tables for DML statements: SELECT, INSERT, UPDATE, DELETE: 
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA schema_name TO username; 
+
+4. Grant all privileges on all tables in the schema: 
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA schema_name TO username; 
+
+5. Grant all privileges on all sequences in the schema: 
+
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA schema_name TO username; 
+
+6. Grant all privileges on the database: 
+
+GRANT ALL PRIVILEGES ON DATABASE database_name TO username; 
+
+7. Grant permission to create database: 
+
+ALTER USER username CREATEDB; 
+
+8. Make a user superuser: 
+
+ALTER USER myuser WITH SUPERUSER; 
+
+9. Remove superuser status: 
+
+ALTER USER username WITH NOSUPERUSER; 
+
+Those statements above only affect the current existing tables. To apply to newly created tables, you need to use alter default. For example: 
+
+ALTER DEFAULT PRIVILEGES 
+
+FOR USER username 
+
+IN SCHEMA schema_name 
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO username; 
+
+ 
+
+10. Grant Default Privileges for Future Tables 
+
+ 
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA test GRANT SELECT ON TABLES to readaccess ; 
+
+ 
+
+ 
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO your_new_user; 
+
+ 
+
+ 
+
+postgres-# CREATE USER read_user WITH PASSWORD 'read_password'; 
+
+postgres-# GRANT readaccess TO read_user; 
+
+ALTER USER username WITH PASSWORD 'new_password'; 
+
+ALTER USER user_name WITH PASSWORD 'new_password'; 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+CREATE ROLE readaccess; 
+
+GRANT CONNECT ON DATABASE webengage TO readaccess; 
+
+GRANT USAGE ON SCHEMA public TO readaccess; 
+
+GRANT USAGE ON SCHEMA test TO readaccess; 
+
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO readaccess; 
+
+GRANT SELECT ON ALL TABLES IN SCHEMA test TO readaccess; 
+
+REVOKE CREATE ON SCHEMA public FROM PUBLIC; 
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO readaccess; 
+
+ 
+
+ 
+
+ 
+
+ALTER USER postgres PASSWORD 'postgres'; 
+
+ALTER DATABASE name OWNER TO new_owner; 
+
+psql -d postgres -U sandy -p 5432 -h 192.1.0.117 
+
+ 
+
+psql -d <database> -U <user_name> -p <port> -h <host_name> 
+
+ 
+
+CREATE ROLE admin WITH CREATEDB CREATEROLE; 
+
+https://www.geeksforgeeks.org/postgresql-tutorial/ 
+
+ 
+
+ 
+
+ 
+
+select pid,usename,date_trunc('minute',(now()-query_start)) as duration,client_addr,query from pg_catalog.pg_stat_activity where state = 'active' order by duration desc 
+
+ 
+
+ 
+
+ 
+
+To kill backend blocking querys : -	 
+
+ 
+
+ 
+
+SELECT activity.;pid, activity.usename, activity.query, blocking.pid AS blocking_id, blocking.query AS blocking_query FROM pg_stat_activity AS activity JOIN pg_stat_activity AS blocking ON blocking.pid = ANY(pg_blocking_pids(activity.pid)) 
+
+ 
+
+SELECT pg_cancel_backend(<pid of the process>)  
+
+
+-----------------
+
+
+Link https://www.geeksforgeeks.org/postgresql-create-role/?ref=lbp 
+
+ 
+
+SELECT current_database(); 
+
+SELECT datname FROM pg_database; 
+
+ 
+
+To check the privileges of user by following: 
+
+SELECT * FROM pg_user; 
+
+As the same way, to check roles: 
+
+SELECT * FROM pg_roles; 
+
+ 
+
+ 
+
+To create a new role, you use the CREATE ROLE statement as follows: 
+
+Syntax: CREATE ROLE role_name; 
+
+ 
+
+To get all roles in the current PostgreSQL database server, you can query them from the pg_roles system catalog as follows: 
+
+Syntax: SELECT rolname FROM pg_roles; 
+
+ 
+
+The attributes of a role define privileges for that role including login, superuser, database creation, role creation, password, etc: 
+
+Syntax: CREATE ROLE name WITH option; 
+
+ 
+
+1. Create login roles 
+
+The following statement creates a role called ‘Raju’ that has the login privilege and an initial password: 
+
+CREATE ROLE raju 
+
+LOGIN  
+
+PASSWORD 'mypassword1'; 
+
+ 
+
+Note: It is required to place the password in single quotes (‘). 
+
+ 
+
+ 
+
+ 
+
+In PostgreSQL, the ALTER ROLE statement is used to manage and modify roles. It can be used to modify the name of a role, the attributes of a role, and alter a role’s session default for a configuration variable. 
+
+Syntax: ALTER ROLE role_name [WITH] option; 
+
+ALTER USER davide WITH PASSWORD hu8jmn3; 
+
+ 
+
+ 
+
+Parameters name The name of the role whose attributes are to be altered. SUPERUSER NOSUPERUSER CREATEDB NOCREATEDB CREATEROLE NOCREATEROLE CREATEUSER NOCREATEUSER INHERIT NOINHERIT LOGIN NOLOGIN CONNECTION LIMIT connlimit PASSWORD password ENCRYPTED UNENCRYPTED VALID UNTIL ' timestamp ' https://docstore.mik.ua/manuals/sql/postgresql-8.2.6/sql-alterrole.html 
+
+ 
+
+ 
+
+ 
+
+In PostgreSQL the DROP ROLE statement to remove a role. 
+
+Syntax: DROP ROLE [IF EXISTS] target_role; 
+
+ 
+
+REVOKE ALL ON DATABASE postgres FROM newrole 
+
+SELECT * FROM pg_user 
+
+ 
+
+ 
+
+REVOKE ALL ON DATABASE example_database FROM example_user; 
+
+GRANT CONNECT ON DATABASE example_database TO example_user; 
+
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO example_user; 
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO example_user; 
+
+ 
+
+=============== 
+
+ 
+
+How to grant access to users in PostgreSQL? 
+
+Here are some common statement to grant access to a PostgreSQL user: 
+
+ 
+
+1. Grant CONNECT to the database: 
+
+ 
+
+GRANT CONNECT ON DATABASE database_name TO username; 
+
+2. Grant USAGE on schema: 
+
+ 
+
+GRANT USAGE ON SCHEMA schema_name TO username; 
+
+3. Grant on all tables for DML statements: SELECT, INSERT, UPDATE, DELETE: 
+
+ 
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA schema_name TO username; 
+
+4. Grant all privileges on all tables in the schema: 
+
+ 
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA schema_name TO username; 
+
+5. Grant all privileges on all sequences in the schema: 
+
+ 
+
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA schema_name TO username; 
+
+6. Grant all privileges on the database: 
+
+ 
+
+GRANT ALL PRIVILEGES ON DATABASE database_name TO username; 
+
+7. Grant permission to create database: 
+
+ 
+
+ALTER USER username CREATEDB; 
+
+8. Make a user superuser: 
+
+ 
+
+ALTER USER myuser WITH SUPERUSER; 
+
+9. Remove superuser status: 
+
+ 
+
+ALTER USER username WITH NOSUPERUSER; 
+
+Those statements above only affect the current existing tables. To apply to newly created tables, you need to use alter default. For example: 
+
+ 
+
+ALTER DEFAULT PRIVILEGES 
+
+FOR USER username 
+
+IN SCHEMA schema_name 
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO username; 
+
+==================== 
+
+ 
+
+How to Create Read Only User 
+
+Here are the steps to create read only user in PostgreSQL. 
+
+ 
+
+1. Create Role 
+
+Log into PostgreSQL and run the following command to a create read only role readaccess. Replace role name as per your requirement. 
+
+postgres-# CREATE ROLE readaccess; 
+
+Also read : How to Compare Two Schemas in PostgreSQL 
+
+ 
+
+2. Assign Permission 
+
+Run the following commands to assign access to newly created role, for database mydb. You can change database name as per your requirement. 
+
+postgres-# GRANT CONNECT ON DATABASE mydb TO readaccess; 
+
+Further we will grant access to all tables in public schema. You can change schema name as per your requirement. 
+
+postgres-# GRANT USAGE ON SCHEMA public TO readaccess; 
+
+postgres-# GRANT SELECT ON ALL TABLES IN SCHEMA public TO readaccess; 
+
+If you want to grant select permission for specific tables (e.g mytable) run the following command 
+
+postgres-# GRANT SELECT ON mytable IN SCHEMA public TO readaccess; 
+
+Also Read : Top 5 Database Design Tools 
+
+ 
+
+3. Create User 
+
+Finally, we create a PostgreSQL user and assign the newly created role to that user. Update read_user and read_password in commands below with your username and password. 
+
+postgres-# CREATE USER read_user WITH PASSWORD 'read_password'; 
+
+postgres-# GRANT readaccess TO read_user; 
+
+ 
+
+CREATE USER warehouse_user WITH PASSWORD 'secure_password'; 
+
+ 
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA service TO venky; 
+
+GRANT USAGE ON SCHEMA service TO venky; 
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA service GRANT select,INSERT, update, delete ON TABLES TO venky; 
+
+ 
+
+ 
+
+ 
+
+CREATE ROLE readaccess; 
+
+GRANT CONNECT ON DATABASE webengage TO readaccess; 
+
+GRANT USAGE ON SCHEMA public TO readaccess; 
+
+GRANT USAGE ON SCHEMA test TO readaccess; 
+
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO readaccess; 
+
+GRANT SELECT ON ALL TABLES IN SCHEMA test TO readaccess; 
+
+REVOKE CREATE ON SCHEMA public FROM PUBLIC; 
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO readaccess; 
+
+ 
+
+ 
+
+https://stackoverflow.com/questions/12391174/how-to-close-idle-connections-in-postgresql-automatically 
+
+ 
+
+ 
+
+—-------------------------------------- 
+
+ 
+
+SELECT  
+
+    schemaname AS schema_name, 
+
+    tablename AS table_name, 
+
+    pg_size_pretty(total_bytes) AS total_size, 
+
+    pg_size_pretty(index_bytes) AS index_size, 
+
+    pg_size_pretty(toast_bytes) AS toast_size, 
+
+    pg_size_pretty(table_bytes) AS table_size 
+
+FROM ( 
+
+    SELECT  
+
+        *,  
+
+        total_bytes-index_bytes-COALESCE(toast_bytes,0) AS table_bytes 
+
+    FROM ( 
+
+        SELECT  
+
+            c.relname AS tablename, 
+
+            ns.nspname AS schemaname, 
+
+            pg_total_relation_size(c.oid) AS total_bytes, 
+
+            pg_indexes_size(c.oid) AS index_bytes, 
+
+            pg_total_relation_size(reltoastrelid) AS toast_bytes 
+
+        FROM pg_class c 
+
+        LEFT JOIN pg_namespace ns ON ns.oid = c.relnamespace 
+
+        WHERE relkind = 'r' -- Only regular tables (no indexes, sequences, or views) 
+
+    ) AS table_sizes 
+
+) AS table_sizes_details 
+
+ORDER BY total_bytes DESC; 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
